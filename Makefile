@@ -1,6 +1,7 @@
 CC = gcc
 STD = -std=c11
-FLAGS = -Wall -Wextra -Wpedantic --pedantic -pedantic-errors -fsanitize=address,undefined
+FLAGS = -Wall -Wextra -Wpedantic --pedantic -pedantic-errors 
+DEBUG_FLAGS = -fsanitize=address,undefined -O0 -g
 
 TARGET = traceroute
 
@@ -12,6 +13,9 @@ $(TARGET) : $(OBJ)
 
 %.o : %.c
 	$(CC) $(FLAGS) -MMD -c $< -o $@
+
+debug: $(TARGET)
+debug: FLAGS += $(DEBUG_FLAGS)
 
 clean:
 	$(RM) *.o
