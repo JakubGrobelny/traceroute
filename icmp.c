@@ -21,7 +21,7 @@ uint16_t icmp_checksum(const void *buf, int length) {
     return ~(sum + (sum >> 16));
 }
 
-void init_icmp_packet(const sockaddr_in_t* addr, void* buf, int seq) {
+void init_icmp_packet(const struct sockaddr_in* addr, void* buf, int seq) {
     assert(buf  != NULL);
     assert(addr != NULL);
     

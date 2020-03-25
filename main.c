@@ -1,7 +1,5 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netinet/ip_icmp.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -9,6 +7,7 @@
 #include <stdio.h>
 
 #include "icmp.h"
+#include "traceroute.h"
 
 
 int main(int argc, char* argv[]) {
@@ -31,20 +30,7 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    for (int ttl = 1; ttl <= 30; ttl++) {
-        for (int i = 0; i < 3; i++) {
-            char buffer[IP_MAXPACKET] = {0};
-            init_icmp_packet(&addr, buffer, ttl * 100 + i);
-
-
-        }
-
-        
-        // TODO: send three packets
-        // TODO: wait for three packets up to 1 second
-        // TODO: calculate the average time for each router that responded
-        // TODO: if the response came from destination address then abort
-    }
+    traceroute(&addr, socket_fd);
 
     close(socket_fd);
     return 0;
