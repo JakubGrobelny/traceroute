@@ -21,13 +21,17 @@ int main(int argc, char* argv[]) {
     struct sockaddr_in addr = {0};
     addr.sin_family = AF_INET;
     if (inet_pton(AF_INET, address, &addr.sin_addr) == 0) {
-        fprintf(stderr, "'%s' is not a valid network address!\n", address);
+        fprintf(
+            stderr, 
+            "inet_pton: '%s' is not a valid network address!\n", 
+            address
+        );
         return EXIT_FAILURE;
     }
 
     int socket_fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (socket_fd == -1) {
-        fprintf(stderr, "%s\n", strerror(errno));
+        fprintf(stderr, "socket: %s\n", strerror(errno));
         return EXIT_FAILURE;
     }
 

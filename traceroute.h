@@ -5,6 +5,6 @@
 #include "icmp.h"
 
 
-void traceroute(const address_t* dest, int socket_fd);
+void traceroute(const struct sockaddr_in* dest, int socket_fd);
 
 #endif

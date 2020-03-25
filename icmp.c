@@ -4,10 +4,10 @@
 #include <assert.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <string.h>
 
-const size_t icmp_packet_size = sizeof(struct icmphdr);
 
-uint16_t icmp_checksum(const void *buf, int length) {
+uint16_t icmp_checksum(const void* buf, int length) {
     assert (length % 2 == 0);
 
     uint16_t sum = 0;
@@ -22,13 +22,13 @@ uint16_t icmp_checksum(const void *buf, int length) {
     return ~(sum + (sum >> 16));
 }
 
-void init_icmp_packet(icmphdr_t* dest, const address_t* addr, int seq) {
+void init_icmp_packet(struct icmphdr* dest, int seq) {
     assert(dest != NULL);
-    assert(addr != NULL);
 
     dest->type = ICMP_ECHO;
     dest->code = 0;
     dest->un.echo.id = getpid();
     dest->un.echo.sequence = seq;
+    dest->checksum = 0;
     dest->checksum = icmp_checksum(dest, sizeof(struct icmphdr));
 }
