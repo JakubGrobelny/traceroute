@@ -1,3 +1,5 @@
+// Jakub Grobelny 300481
+
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -31,7 +33,7 @@ int main(int argc, char* argv[]) {
 
     int socket_fd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
     if (socket_fd == -1) {
-        fprintf(stderr, "socket: %s\n", strerror(errno));
+        perror("socket");
         return EXIT_FAILURE;
     }
 

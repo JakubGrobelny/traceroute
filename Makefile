@@ -1,5 +1,5 @@
 CC = gcc
-STD = -std=gnu11
+STD = -std=c17
 FLAGS = -Wall -Wextra -Wpedantic --pedantic -pedantic-errors 
 DEBUG_FLAGS = -fsanitize=address,undefined -O0 -g -DDEBUG
 
