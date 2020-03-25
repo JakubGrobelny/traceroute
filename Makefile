@@ -1,7 +1,7 @@
 CC = gcc
 STD = -std=c17
 FLAGS = -Wall -Wextra -Wpedantic --pedantic -pedantic-errors 
-DEBUG_FLAGS = -fsanitize=address,undefined -O0 -g
+DEBUG_FLAGS = -fsanitize=address,undefined -O0 -g -DDEBUG
 
 TARGET = traceroute
 

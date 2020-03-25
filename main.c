@@ -19,6 +19,7 @@ int main(int argc, char* argv[]) {
     const char* address = argv[1];
 
     struct sockaddr_in addr = {0};
+    addr.sin_family = AF_INET;
     if (inet_pton(AF_INET, address, &addr.sin_addr) == 0) {
         fprintf(stderr, "'%s' is not a valid network address!\n", address);
         return EXIT_FAILURE;

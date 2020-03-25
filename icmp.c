@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include <netinet/ip_icmp.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+
+const size_t icmp_packet_size = sizeof(struct icmphdr);
 
 uint16_t icmp_checksum(const void *buf, int length) {
     assert (length % 2 == 0);
@@ -21,17 +22,13 @@ uint16_t icmp_checksum(const void *buf, int length) {
     return ~(sum + (sum >> 16));
 }
 
-void init_icmp_packet(const struct sockaddr_in* addr, void* buf, int seq) {
-    assert(buf  != NULL);
+void init_icmp_packet(icmphdr_t* dest, const address_t* addr, int seq) {
+    assert(dest != NULL);
     assert(addr != NULL);
-    
-    struct iphdr* ip_header = buf;
-    char* packet = (char*)buf + ip_header->ihl * 4;
-    struct icmphdr* icmp_header = (struct icmphdr*)packet;
 
-    icmp_header->type = ICMP_ECHO;
-    icmp_header->code = 0;
-    icmp_header->un.echo.id = getpid();
-    icmp_header->un.echo.sequence = seq;
-    icmp_header->checksum = icmp_checksum(icmp_header, sizeof(struct icmphdr));
+    dest->type = ICMP_ECHO;
+    dest->code = 0;
+    dest->un.echo.id = getpid();
+    dest->un.echo.sequence = seq;
+    dest->checksum = icmp_checksum(dest, sizeof(struct icmphdr));
 }
