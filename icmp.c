@@ -24,6 +24,7 @@ uint16_t icmp_checksum(const void* buf, int length) {
     return ~(sum + (sum >> 16));
 }
 
+
 void init_icmp_packet(struct icmphdr* dest, int seq) {
     assert(dest != NULL);
 
@@ -35,13 +36,16 @@ void init_icmp_packet(struct icmphdr* dest, int seq) {
     dest->checksum = icmp_checksum(dest, sizeof(struct icmphdr));
 }
 
+
 int sequence_number(int ttl, int i) {
     return ttl << 2 | i;
 }
 
+
 int was_recent(int seq, int ttl) {
     return seq >> 2 == ttl;
 }
+
 
 void send_packet(
     const struct icmphdr* packet, 
@@ -63,6 +67,7 @@ void send_packet(
     }
     assert(sent == sizeof(packet));
 }
+
 
 bool is_valid_ttl_exceeded_packet(const void* buffer, int ttl) {
     struct iphdr* ip_header = (struct iphdr*)buffer;

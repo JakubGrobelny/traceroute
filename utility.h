@@ -17,4 +17,6 @@ void print_unique_responders(response_info_t* responders, int n);
 
 void update_time(response_info_t* responder, struct timeval* time_left);
 
+void print_responders_avg_time(response_info_t* responders, int n);
+
 #endif

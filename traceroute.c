@@ -33,6 +33,7 @@ static await_result_t await_packets(int socket_fd, struct timeval* time) {
     return AVALIABLE;
 }
 
+
 static bool receive_packets(int socket_fd, int ttl) {
     int received = 0;
 
@@ -100,17 +101,12 @@ static bool receive_packets(int socket_fd, int ttl) {
     } else if (received < 3) {
         printf("???\n");
     } else {
-        uint64_t total_microseconds = 0;
-        for (int i = 0; i < received; i++) {
-            total_microseconds += responders[i].time.tv_usec;
-        }
-
-        uint64_t average = total_microseconds / 1000 / 3;
-        printf("%ldms\n", average);
+        print_responders_avg_time(responders, received);
     }
 
     return target_responded;
 }
+
 
 void traceroute(const struct sockaddr_in* dest, int socket_fd) {
     for (int ttl = 1; ttl <= 30; ttl++) {
@@ -134,12 +130,8 @@ void traceroute(const struct sockaddr_in* dest, int socket_fd) {
             send_packet(&packet, socket_fd, dest);
         }
 
-        // TODO: wait for three packets up to 1 second
         if (receive_packets(socket_fd, ttl)) {
             return;
         }
-
-        // TODO: calculate the average time for each router that responded
-        // TODO: if the response came from destination address then abort
     }
 }

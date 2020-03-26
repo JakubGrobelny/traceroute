@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+
 char* translate_address(const struct sockaddr_in* addr, char buffer[20]) {
     const char* sender_ip = inet_ntop(
         AF_INET, 
@@ -24,6 +25,7 @@ char* translate_address(const struct sockaddr_in* addr, char buffer[20]) {
 
     return buffer;
 }
+
 
 void print_unique_responders(response_info_t* responders, int n) {
     for (int i = 0; i < n; i++) {
@@ -45,8 +47,20 @@ void print_unique_responders(response_info_t* responders, int n) {
     }
 }
 
+
 void update_time(response_info_t* responder, struct timeval* time_left) {
     responder->time.tv_sec  = 1;
     responder->time.tv_usec = 0;
     timersub(&responder->time, time_left, &responder->time);
+}
+
+
+void print_responders_avg_time(response_info_t* responders, int n) {
+    uint64_t total_microseconds = 0;
+    for (int i = 0; i < n; i++) {
+        total_microseconds += responders[i].time.tv_usec;
+    }
+
+    uint64_t average = total_microseconds / 1000 / 3;
+    printf("%ldms\n", average);    
 }
