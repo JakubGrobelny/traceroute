@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 
-uint16_t icmp_checksum(const void *buf, int length);
+uint16_t icmp_checksum(const void* buf, int length);
 
 void init_icmp_packet(struct icmphdr* dest, int seq);
 

@@ -55,6 +55,9 @@ static bool receive_packets(int socket_fd, int ttl) {
         socklen_t sender_size = sizeof(sender);
         uint8_t buffer[IP_MAXPACKET] = {0};
 
+        // Uwaga: przez to że przed każdym wywołaniem recvfrom
+        // używany jest select, to flaga MSG_DONTWAIT nie jest
+        // potrzebna (mamy gwarancję, że czeka na nas pakiet).
         ssize_t packet_size = recvfrom(
             socket_fd,  
             buffer, 
@@ -88,6 +91,8 @@ static bool receive_packets(int socket_fd, int ttl) {
             if (!is_valid_ttl_exceeded_packet(payload, ttl)) {
                 continue;
             }
+        } else {
+            continue;
         }
 
         update_time(&responders[received], &time);
