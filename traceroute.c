@@ -1,6 +1,8 @@
 // Jakub Grobelny 300481
 
 #include "traceroute.h"
+#include "utility.h"
+
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <stdio.h>
@@ -12,7 +14,6 @@
 #include <sys/select.h>
 #include <stdbool.h>
 
-#include "utility.h"
 
 
 static await_result_t await_packets(int socket_fd, struct timeval* time) {
@@ -40,16 +41,12 @@ static bool receive_packets(int socket_fd, int ttl) {
     time.tv_usec = 0;
 
     bool target_responded = false;
-    char responders[20][3] = { '\0' };
+    response_info_t responders[3];
 
     printf("%d. ", ttl);
 
     while (received < 3) {
         if (await_packets(socket_fd, &time) == TIMEOUT) {
-            #ifdef DEBUG
-            printf("TIMEOUT [ttl: %d]\n", ttl);
-            #endif
-
             break;
         }
 
@@ -71,12 +68,7 @@ static bool receive_packets(int socket_fd, int ttl) {
             exit(EXIT_FAILURE);
         }
 
-        const char* sender_ip = translate_address(
-            &sender, 
-            responders[received]
-        );
-
-        printf("%s ", sender_ip);
+        translate_address(&sender, responders[received].ip);
 
         struct iphdr* ip_header = (struct iphdr*)buffer;
         ssize_t ip_header_size  = 4 * ip_header->ihl;
@@ -90,19 +82,32 @@ static bool receive_packets(int socket_fd, int ttl) {
                 continue;
             }
             target_responded = true;
-        } else if (icmp_header->type == ICMP_EXC_TTL) {
+        } else if (icmp_header->type == ICMP_TIME_EXCEEDED) {
             void* payload = (uint8_t*)icmp_header + sizeof(struct icmphdr);
             if (!is_valid_ttl_exceeded_packet(payload, ttl)) {
                 continue;
             }
         }
 
+        update_time(&responders[received], &time);
         received++;
     }
 
-    #ifdef DEBUG
-    printf("[received: %d]\n", received);
-    #endif
+    print_unique_responders(responders, received);
+
+    if (received == 0) {
+        printf("*\n");
+    } else if (received < 3) {
+        printf("???\n");
+    } else {
+        uint64_t total_microseconds = 0;
+        for (int i = 0; i < received; i++) {
+            total_microseconds += responders[i].time.tv_usec;
+        }
+
+        uint64_t average = total_microseconds / 1000 / 3;
+        printf("%ldms\n", average);
+    }
 
     return target_responded;
 }
